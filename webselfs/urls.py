@@ -17,9 +17,14 @@ from django.contrib import admin
 from django.urls import path
 from django.conf.urls import url
 from webc import views
+from django.contrib.auth.views import login, logout
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    url(r'^$', views.hello),
+    # url(r'^$', views.hello),
+    path(r'', views.hello),
     url(r'^1$', views.recv_data),
+    url(r'^admin/login/$', login),
+    url(r'^admin/logout/$', logout),
 ]
