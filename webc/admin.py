@@ -7,9 +7,9 @@ admin.site.site_title = '物联网系统管理系统'
 
 
 # Blog模型的管理器
-@admin.register(UserInfo)
-class UserAdmin(admin.ModelAdmin):
-    list_display = ('id', 'username', 'password', 'name', 'if_admin')
+# @admin.register(UserInfo)
+# class UserAdmin(admin.ModelAdmin):
+#     list_display = ('id', 'username', 'password', 'name', 'if_admin')
 
 
 @admin.register(DeviceInfo)
