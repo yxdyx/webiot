@@ -17,6 +17,11 @@ def jsonedit(reason=None, logininfo="success"):
     return j
 
 
+
+
+
+
+
 # 管理员/用户登录
 def login(request):
     if request.method == 'POST':
@@ -42,7 +47,7 @@ def login(request):
         else:
             reason = "无此用户或密码错误"
         j = jsonedit(reason)
-        return HttpResponse(j)
+        return render(request, 'login.html', {'data': j})
 
 
 # 已登录
