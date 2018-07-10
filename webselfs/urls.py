@@ -34,4 +34,5 @@ urlpatterns = [
     path('delete_device/',views.delete_device),
     path('change/',views.change_user_pwd),
     path('logout/',views.logout),
+    path('1/',views.recv_data)
 ]

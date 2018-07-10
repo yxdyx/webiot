@@ -9,80 +9,76 @@ from .models import DeviceInfo
 
 # Create your views here.
 
-
-#
-# def hello(request):
-#     return HttpResponse("Hello world ! ")
-#
-#
-# @login_required(login_url='/')
-# def recv_data(request):
-#     if request.method == 'POST':
-#         try:
-#             req = json.loads(request.body)
-#             username = req['username']
-#             password = req['password']
-#             print(username, password)
-#             print(req)
-#             j = json.dumps(req)
-#             return HttpResponse(j)
-#         except:
-#             return HttpResponse('为什么不执行')
-#     else:
-#         print('abc')
-#         return HttpResponse("没收到 ")
-#
-
-# class User(forms.Form):
-#
+# 用于编辑要发送的json信息
+def jsonedit(reason=None, logininfo="success"):
+    if reason != None:
+        logininfo = "fail"
+    j = json.dumps({"logininfo": logininfo, "reason": reason}, ensure_ascii=False)
+    return j
 
 
-# 管理员登录
+# 管理员/用户登录
 def login(request):
     if request.method == 'POST':
         try:
             req = json.loads(request.body)
-            print(req)
             username = req['username']
             password = req['password']
-            print(username+password)
         except:
-            return HttpResponse("没有耶")
+            reason = "没有数据耶"
+            j = jsonedit(reason)
+            return HttpResponse(j)
         user = auth.authenticate(username=username, password=password)
         if user is not None:
-            if user.is_active and user.is_staff:
+            if user.is_active:
+                # if user.is_staff:
+                #     status="manager"
+                # else:
+                #     status="user"
                 auth.login(request, user)
-                print("yes")
-                # return HttpResponse(redirect('/manage'))
-                j=json.dumps({"info":"success"})
-                return HttpResponse(j)
-
+                reason = None
             else:
-                return HttpResponse("该用户无效")
+                reason = "该用户无效"
         else:
-            return HttpResponse("无此用户")
+            reason = "无此用户或密码错误"
+        j = jsonedit(reason)
+        return HttpResponse(j)
 
 
 # 已登录
-# 管理员增加用户
+# 管理员增加用户/管理员
 @login_required(login_url='/')
 def add_user(request):
     if request.method == 'POST':
+
+        adder = request.user.username
+        if User.objects.get(username=adder).is_staff != 1:
+            info = "fail"
+            reason = "普通用户无此权限"
+            j = jsonedit(info, reason)
+            return HttpResponse(j)
+
         try:
             req = json.loads(request.body)
             username = req['username']
             password = req['password']
+            staff = req['staff']  # 0 user 1 manager
         except:
-            return HttpResponse("没有耶")
+            reason = "没有数据耶"
+            j = jsonedit(reason)
+            return HttpResponse(j)
 
         try:
-            user = User.objects.create_user(username=username, email=None, password=password,is_staff=1)
+            user = User.objects.create_user(username=username, email=None, password=password, is_staff=staff)
         except:
-            return HttpResponse("add_user出错啦")
+            reason = "add_user出错啦"
+            j = jsonedit(reason)
+            return HttpResponse(j)
 
         user.save()
-        print("woo")
-        return HttpResponse(redirect('/manage'))
+        reason = None
+        j = jsonedit(reason)
+        return HttpResponse(j)
 
 
 # 已登录
@@ -90,38 +86,65 @@ def add_user(request):
 @login_required(login_url='/')
 def add_device(request):
     if request.method == 'POST':
+
+        adder = request.user.username
+        if User.objects.get(username=adder).is_staff != 1:
+            reason = "普通用户无此权限"
+            j = jsonedit(reason)
+            return HttpResponse(j)
+
         try:
             req = json.loads(request.body)
             devicename = req['devicename']
             devicesecret = req['devicesecret']
         except:
-            return HttpResponse("没有耶")
+            reason = "没有数据耶"
+            j = jsonedit(reason)
+            return HttpResponse(j)
 
         try:
             device = DeviceInfo.objects.create(devicename=devicename, devicesecret=devicesecret)
         except:
-            return HttpResponse("add_device出错啦")
+            reason = "add_device出错啦"
+            j = jsonedit(reason)
+            return HttpResponse(j)
 
-        device.save()
-        return HttpResponse(redirect('/manage'))
+        reason = None
+        j = jsonedit(reason)
+        return HttpResponse(j)
 
 
 # 已登录
-# 管理员删除用户
+# 管理员删除用户/管理员
 @login_required(login_url='/')
 def delete_user(request):
     if request.method == 'POST':
+
+        adder = request.user.username
+        if User.objects.get(username=adder).is_staff != 1:
+            reason = "普通用户无此权限"
+            j = jsonedit(reason)
+            return HttpResponse(j)
+
         try:
             req = json.loads(request.body)
             username = req['username']
         except:
-            return HttpResponse("没有这个人耶")
+
+            reason = "没有这个人耶"
+            j = jsonedit(reason)
+            return HttpResponse(j)
         try:
             User.objects.filter(username=username).delete()
         except:
-            return HttpResponse("delete_user出错啦")
 
-        return HttpResponse(redirect('/manage'))
+            reason = "delete_user出错啦"
+            j = jsonedit(reason)
+            return HttpResponse(j)
+
+        reason = None
+        j = jsonedit(reason)
+        return HttpResponse(j)
 
 
 # 已登录
@@ -129,17 +152,33 @@ def delete_user(request):
 @login_required(login_url='/')
 def delete_device(request):
     if request.method == 'POST':
+
+        adder = request.user.username
+        if User.objects.get(username=adder).is_staff != 1:
+            reason = "普通用户无此权限"
+            j = jsonedit(reason)
+            return HttpResponse(j)
+
         try:
             req = json.loads(request.body)
             device_id = req['id']
         except:
-            return HttpResponse("没有耶")
+
+            reason = "没有这个设备耶"
+            j = jsonedit(reason)
+            return HttpResponse(j)
+
         try:
             DeviceInfo.objects.filter(id=device_id).delete()
         except:
-            return HttpResponse("delete_device出错啦")
 
-        return HttpResponse(redirect('/manage'))
+            reason = "delete_device出错啦"
+            j = jsonedit(reason)
+            return HttpResponse(j)
+
+        reason = None
+        j = jsonedit(reason)
+        return HttpResponse(j)
 
 
 # 已登录
@@ -147,26 +186,66 @@ def delete_device(request):
 @login_required(login_url='/')
 def change_user_pwd(request):
     if request.method == 'POST':
+
+        adder = request.user.username
+        if User.objects.get(username=adder).is_staff != 1:
+            reason = "普通用户无此权限"
+            j = jsonedit(reason)
+            return HttpResponse(j)
+
         try:
             req = json.loads(request.body)
             username = req['username']
             password = req['password']
             n_pwd = req['n_password']
         except:
-            return HttpResponse("没有耶")
+
+            reason = "没有这数据耶"
+            j = jsonedit(reason)
+            return HttpResponse(j)
+
         user = auth.authenticate(username=username, password=password)
         try:
             if user is not None:
                 user.set_password(n_pwd)
                 user.save()
+                reason = None
+            else:
+                reason = "无此用户"
         except:
-            return HttpResponse("change出错啦")
 
-        return HttpResponse(redirect('/manage'))
+            reason = "change出错啦"
+            j = jsonedit(reason)
+            return HttpResponse(j)
+
+        j = jsonedit(reason)
+        return HttpResponse(j)
 
 
+# 登出
 @login_required(login_url='/')
 def logout(request):
     if request.method == 'POST':
         auth.logout(request)
         return HttpResponse(redirect('/'))
+
+
+def recv_data(request):
+    if request.method == 'POST':
+        try:
+            print(request.body)
+            req = json.loads(request.body)
+            print(req)
+            username = req['uname']
+            password = req['pwd']
+            # print(request.body.decode())
+            print(username, password)
+            print(req)
+            # j = json.dumps(req)
+            return HttpResponse('gandehao')
+        except:
+            print('e')
+            return HttpResponse('为什么不执行')
+    else:
+        print('abc')
+        return HttpResponse("没收到 ")
