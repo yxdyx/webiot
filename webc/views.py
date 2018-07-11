@@ -1,10 +1,12 @@
 import json
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse,HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import auth
 from django.contrib.auth.models import User
 from .models import DeviceInfo
+from .utils import Ali
+import jpype
 
 
 # Create your views here.
@@ -17,29 +19,29 @@ def jsonedit(reason=None, logininfo="success"):
     return j
 
 
-
-
-
-
-
 # 管理员/用户登录
 def login(request):
     if request.method == 'POST':
-        try:
-            req = json.loads(request.body)
-            username = req['username']
-            password = req['password']
-        except:
+        # try:
+        #     req = json.loads(request.body)
+        #     username = req['username']
+        #     password = req['password']
+        # except:
+        #     reason = "没有数据耶"
+        #     j = jsonedit(reason)
+        #     return HttpResponse(j)
+
+        req = json.loads(request.body)
+        username = req['username']
+        password = req['password']
+        if username=='' or password=='':
             reason = "没有数据耶"
             j = jsonedit(reason)
             return HttpResponse(j)
+        print(req)
         user = auth.authenticate(username=username, password=password)
         if user is not None:
             if user.is_active:
-                # if user.is_staff:
-                #     status="manager"
-                # else:
-                #     status="user"
                 auth.login(request, user)
                 reason = None
             else:
@@ -47,7 +49,18 @@ def login(request):
         else:
             reason = "无此用户或密码错误"
         j = jsonedit(reason)
-        return render(request, 'login.html', {'data': j})
+        return HttpResponse(j)
+    else:
+        return render(request,'login.html')
+
+@login_required(login_url='/')
+def index(request):
+    print(request.user.username)
+    return render(request,'index.html')
+
+@login_required(login_url='/')
+def main(request):
+    return render(request,'page/main.html')
 
 
 # 已登录
@@ -219,7 +232,7 @@ def change_user_pwd(request):
                 reason = "无此用户"
         except:
 
-            reason = "change出错啦"
+            reason = "改密码出错啦"
             j = jsonedit(reason)
             return HttpResponse(j)
 
@@ -230,27 +243,9 @@ def change_user_pwd(request):
 # 登出
 @login_required(login_url='/')
 def logout(request):
-    if request.method == 'POST':
-        auth.logout(request)
-        return HttpResponse(redirect('/'))
+    print(request.user.username+" ou")
+    auth.logout(request)
+    return HttpResponse(redirect('/'))
 
 
-def recv_data(request):
-    if request.method == 'POST':
-        try:
-            print(request.body)
-            req = json.loads(request.body)
-            print(req)
-            username = req['uname']
-            password = req['pwd']
-            # print(request.body.decode())
-            print(username, password)
-            print(req)
-            # j = json.dumps(req)
-            return HttpResponse('gandehao')
-        except:
-            print('e')
-            return HttpResponse('为什么不执行')
-    else:
-        print('abc')
-        return HttpResponse("没收到 ")
+

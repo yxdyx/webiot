@@ -14,25 +14,23 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-from django.conf.urls import url
+from django.urls import path, re_path
 from webc import views
-from django.contrib.auth.views import login, logout
-
+from webc.utils import Ali
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    # url(r'^$', views.hello),
-    # path(r'', views.hello),
-    # url(r'^1$', views.recv_data),
-    # url(r'^admin/login/$', login),
-    # url(r'^admin/logout/$', logout),
-    path('',views.login),
-    path('add_user/',views.add_user),
-    path('add_device/',views.add_device),
-    path('delete_user/',views.delete_user),
-    path('delete_device/',views.delete_device),
-    path('change/',views.change_user_pwd),
-    path('logout/',views.logout),
-    path('1/',views.recv_data),
+    # path('admin/', admin.site.urls),
+    path('', views.login),
+    path('index/', views.index),
+    path('page/main/', views.main),
+    path('add_device/', views.add_device),
+    path('add_user/', views.add_user),
+    path('delete_user/', views.delete_user),
+    path('delete_device/', views.delete_device),
+    path('change/', views.change_user_pwd),
+    path('logout/', views.logout),
+    path('deviceinfoall/', Ali.device_status_all),
+    path('deviceinfosolo/', Ali.device_status_solo),
+    path('userinfoall/', Ali.user_info_all),
+    path('userinfosolo/', Ali.user_info_solo),
 ]
