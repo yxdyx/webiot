@@ -3,7 +3,7 @@ import json
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from webc.models import UandD
+from webc.models import UandD, DeviceInfo
 
 jvmPath = jpype.getDefaultJVMPath()
 ext_classpath = './JavaJar/text.jar'
@@ -11,10 +11,10 @@ jvmArg = '-Djava.class.path=' + ext_classpath
 
 
 # 用于编辑要发送的json信息
-def jsonedit(reason=None, logininfo="success"):
+def jsonedit(reason=None, info="success"):
     if reason != None:
-        logininfo = "fail"
-    j = json.dumps({"logininfo": logininfo, "reason": reason}, ensure_ascii=False)
+        info = "fail"
+    j = json.dumps({"info": info, "reason": reason}, ensure_ascii=False)
     return j
 
 
@@ -62,6 +62,59 @@ def user_info_solo(request):
     return HttpResponse(s)
 
 
+# 已登录
+# 管理员增加设备
+@login_required(login_url='/')
+def add_device(request):
+    if request.method == 'POST':
+        adder = request.user.username
+        if User.objects.get(username=adder).is_staff != 1:
+            reason = "普通用户无此权限"
+            j = jsonedit(reason)
+            return HttpResponse(j)
+
+        try:
+            req = json.loads(request.body)
+            devicename = req['devicename']
+        except:
+            reason = "没有数据耶"
+            j = jsonedit(reason)
+            return HttpResponse(j)
+
+
+
+        device = DeviceInfo.objects.filter(devicename=devicename)
+        # except:
+        #     reason = "重名啦"
+        #     j = jsonedit(reason)
+        #     return HttpResponse(j)
+        if device.exists():
+            print(device)
+            reason = "重名啦"
+            j = jsonedit(reason)
+            return HttpResponse(j)
+
+
+        if not jpype.isJVMStarted():
+            jpype.startJVM(jvmPath, jvmArg)
+
+        jpype.attachThreadToJVM()
+        Main = jpype.JClass("yuer.yueriot")
+        jd = Main()
+        secret=jd.yuerregist(devicename)
+
+        try:
+            DeviceInfo.objects.create(devicename=devicename,devicesecret=secret)
+        except:
+            reason="add_device出错"
+            j=jsonedit(reason)
+            return HttpResponse(j)
+
+        reason = None
+        j = jsonedit(reason)
+        return HttpResponse(j)
+
+
 # 设备信息的json包
 def search_device_all():
     dd = []
@@ -76,9 +129,15 @@ def search_device_all():
     for user in users:
         devices = UandD.objects.all().filter(userid_id=user.id)
         if devices:
+            # print(devices)
             for device in devices:
-                s = jd.yuerselectdeviceStatus(device.devicename)
-                q = jd.yuerselectdeviceSecret(device.devicename)
+                try:
+                    s = jd.yuerselectdeviceStatus(device.devicename)
+                except:
+                    s="ERROR"
+                # print(s)
+                q = DeviceInfo.objects.filter(devicename=device.devicename).first().devicesecret
+                # print(q)
                 re = deviceInfoJson(device.deviceid_id, device.devicename, q, device.username, s)
                 dd.append(re)
     s = json.dumps(dd, indent=4)
@@ -104,8 +163,12 @@ def search_device_solo(username):
         devices = UandD.objects.all().filter(userid_id=user.id)
         if devices:
             for device in devices:
-                s = jd.yuerselectdeviceStatus(device.devicename)
-                q = jd.yuerselectdeviceSecret(device.devicename)
+                try:
+                    s = jd.yuerselectdeviceStatus(device.devicename)
+                except:
+                    s="ERROR"
+                # q = DeviceInfo.objects.get(devicename=device.devicename).devicesecret
+                q = DeviceInfo.objects.filter(devicename=device.devicename).first().devicesecret
                 re = deviceInfoJson(device.deviceid_id, device.devicename, q, device.username, s)
                 dd.append(re)
     s = json.dumps(dd, indent=4)

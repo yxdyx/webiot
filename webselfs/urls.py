@@ -23,7 +23,7 @@ urlpatterns = [
     path('', views.login),
     path('index/', views.index),
     path('page/main/', views.main),
-    path('add_device/', views.add_device),
+    path('add_device/', Ali.add_device),
     path('add_user/', views.add_user),
     path('delete_user/', views.delete_user),
     path('delete_device/', views.delete_device),

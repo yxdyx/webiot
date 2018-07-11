@@ -1,6 +1,6 @@
 import json
 from django.shortcuts import render, redirect
-from django.http import HttpResponse,HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import auth
 from django.contrib.auth.models import User
@@ -12,10 +12,10 @@ import jpype
 # Create your views here.
 
 # 用于编辑要发送的json信息
-def jsonedit(reason=None, logininfo="success"):
+def jsonedit(reason=None, info="success"):
     if reason != None:
-        logininfo = "fail"
-    j = json.dumps({"logininfo": logininfo, "reason": reason}, ensure_ascii=False)
+        info = "fail"
+    j = json.dumps({"info": info, "reason": reason}, ensure_ascii=False)
     return j
 
 
@@ -34,7 +34,7 @@ def login(request):
         req = json.loads(request.body)
         username = req['username']
         password = req['password']
-        if username=='' or password=='':
+        if username == '' or password == '':
             reason = "没有数据耶"
             j = jsonedit(reason)
             return HttpResponse(j)
@@ -51,16 +51,18 @@ def login(request):
         j = jsonedit(reason)
         return HttpResponse(j)
     else:
-        return render(request,'login.html')
+        return render(request, 'login.html')
+
 
 @login_required(login_url='/')
 def index(request):
     print(request.user.username)
-    return render(request,'index.html')
+    return render(request, 'index.html')
+
 
 @login_required(login_url='/')
 def main(request):
-    return render(request,'page/main.html')
+    return render(request, 'page/main.html')
 
 
 # 已登录
@@ -99,38 +101,6 @@ def add_user(request):
         return HttpResponse(j)
 
 
-# 已登录
-# 管理员增加设备
-@login_required(login_url='/')
-def add_device(request):
-    if request.method == 'POST':
-
-        adder = request.user.username
-        if User.objects.get(username=adder).is_staff != 1:
-            reason = "普通用户无此权限"
-            j = jsonedit(reason)
-            return HttpResponse(j)
-
-        try:
-            req = json.loads(request.body)
-            devicename = req['devicename']
-            devicesecret = req['devicesecret']
-        except:
-            reason = "没有数据耶"
-            j = jsonedit(reason)
-            return HttpResponse(j)
-
-        try:
-            device = DeviceInfo.objects.create(devicename=devicename, devicesecret=devicesecret)
-        except:
-            reason = "add_device出错啦"
-            j = jsonedit(reason)
-            return HttpResponse(j)
-
-        reason = None
-        j = jsonedit(reason)
-        return HttpResponse(j)
-
 
 # 已登录
 # 管理员删除用户/管理员
@@ -148,10 +118,10 @@ def delete_user(request):
             req = json.loads(request.body)
             username = req['username']
         except:
-
             reason = "没有这个人耶"
             j = jsonedit(reason)
             return HttpResponse(j)
+
         try:
             User.objects.filter(username=username).delete()
         except:
@@ -243,9 +213,6 @@ def change_user_pwd(request):
 # 登出
 @login_required(login_url='/')
 def logout(request):
-    print(request.user.username+" ou")
+    print(request.user.username + " ou")
     auth.logout(request)
     return HttpResponse(redirect('/'))
-
-
-
