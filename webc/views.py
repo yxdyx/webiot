@@ -5,9 +5,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import auth
 from django.contrib.auth.models import User
 from .models import DeviceInfo
-from .utils import Ali
-import jpype
-
 
 # Create your views here.
 
@@ -22,15 +19,6 @@ def jsonedit(reason=None, info="success"):
 # 管理员/用户登录
 def login(request):
     if request.method == 'POST':
-        # try:
-        #     req = json.loads(request.body)
-        #     username = req['username']
-        #     password = req['password']
-        # except:
-        #     reason = "没有数据耶"
-        #     j = jsonedit(reason)
-        #     return HttpResponse(j)
-
         req = json.loads(request.body)
         username = req['username']
         password = req['password']
@@ -53,21 +41,9 @@ def login(request):
     else:
         return render(request, 'login.html')
 
-
-@login_required(login_url='/')
-def index(request):
-    print(request.user.username)
-    return render(request, 'index.html')
-
-
-@login_required(login_url='/')
-def main(request):
-    return render(request, 'page/main.html')
-
-
 # 已登录
 # 管理员增加用户/管理员
-@login_required(login_url='/')
+@login_required
 def add_user(request):
     if request.method == 'POST':
 
@@ -104,7 +80,7 @@ def add_user(request):
 
 # 已登录
 # 管理员删除用户/管理员
-@login_required(login_url='/')
+@login_required
 def delete_user(request):
     if request.method == 'POST':
 
@@ -137,7 +113,7 @@ def delete_user(request):
 
 # 已登录
 # 管理员删除设备
-@login_required(login_url='/')
+@login_required
 def delete_device(request):
     if request.method == 'POST':
 
@@ -171,7 +147,7 @@ def delete_device(request):
 
 # 已登录
 # 管理员修改用户密码
-@login_required(login_url='/')
+@login_required
 def change_user_pwd(request):
     if request.method == 'POST':
 
@@ -211,8 +187,47 @@ def change_user_pwd(request):
 
 
 # 登出
-@login_required(login_url='/')
+@login_required
 def logout(request):
     print(request.user.username + " ou")
     auth.logout(request)
     return HttpResponse(redirect('/'))
+
+
+
+@login_required
+def index(request):
+    return render(request, 'index.html')
+
+@login_required
+def main(request):
+    return render(request, 'page/main.html')
+
+@login_required
+def newsAdd(request):
+    return render(request,'page/machine/newsAdd.html')
+
+@login_required
+def machineList(request):
+    return render(request,'page/machine/machineList.html')
+
+@login_required
+def machineEdit(request):
+    return render(request,'page/machine/machineEdit.html')
+
+@login_required
+def addUser(request):
+    return render(request,'page/user/addUser.html')
+
+@login_required
+def allUsers(request):
+    return render(request,'page/user/allUsers.html')
+
+@login_required
+def changePwd(request):
+    return render(request,'page/user/changePwd.html')
+
+@login_required
+def editUser(request):
+    return render(request,'page/user/editUser.html')
+

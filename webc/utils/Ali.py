@@ -81,19 +81,12 @@ def add_device(request):
             j = jsonedit(reason)
             return HttpResponse(j)
 
-
-
         device = DeviceInfo.objects.filter(devicename=devicename)
-        # except:
-        #     reason = "重名啦"
-        #     j = jsonedit(reason)
-        #     return HttpResponse(j)
         if device.exists():
             print(device)
             reason = "重名啦"
             j = jsonedit(reason)
             return HttpResponse(j)
-
 
         if not jpype.isJVMStarted():
             jpype.startJVM(jvmPath, jvmArg)
@@ -101,13 +94,13 @@ def add_device(request):
         jpype.attachThreadToJVM()
         Main = jpype.JClass("yuer.yueriot")
         jd = Main()
-        secret=jd.yuerregist(devicename)
+        secret = jd.yuerregist(devicename)
 
         try:
-            DeviceInfo.objects.create(devicename=devicename,devicesecret=secret)
+            DeviceInfo.objects.create(devicename=devicename, devicesecret=secret)
         except:
-            reason="add_device出错"
-            j=jsonedit(reason)
+            reason = "add_device出错"
+            j = jsonedit(reason)
             return HttpResponse(j)
 
         reason = None
@@ -134,7 +127,7 @@ def search_device_all():
                 try:
                     s = jd.yuerselectdeviceStatus(device.devicename)
                 except:
-                    s="ERROR"
+                    s = "ERROR"
                 # print(s)
                 q = DeviceInfo.objects.filter(devicename=device.devicename).first().devicesecret
                 # print(q)
@@ -166,7 +159,7 @@ def search_device_solo(username):
                 try:
                     s = jd.yuerselectdeviceStatus(device.devicename)
                 except:
-                    s="ERROR"
+                    s = "ERROR"
                 # q = DeviceInfo.objects.get(devicename=device.devicename).devicesecret
                 q = DeviceInfo.objects.filter(devicename=device.devicename).first().devicesecret
                 re = deviceInfoJson(device.deviceid_id, device.devicename, q, device.username, s)
