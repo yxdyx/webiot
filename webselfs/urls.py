@@ -21,24 +21,22 @@ from webc.utils import Ali
 urlpatterns = [
     # path('admin/', admin.site.urls),
     path('', views.login),
-    path('add_device/', Ali.add_device),# 管理员增加设备
+    path('add_device/', Ali.add_device),# 管理员增加设备同时与已有用户绑定
     path('add_user/', views.add_user),# 管理员增加用户/管理员
     path('delete_user/', views.delete_user),# 管理员删除用户/管理员
     path('delete_device/', views.delete_device),# 管理员删除设备
     path('change/', views.change_user_pwd),# 管理员修改用户密码
     path('logout/', views.logout),# 登出
-    # path('deviceinfoall/', Ali.device_status_all),# 管理员请求查看所有设备信息
-    # path('deviceinfosolo/', Ali.device_status_solo),# 用户请求查看所拥有的设备信息
-    path('userinfoall/', Ali.user_info_all), # 管理员请求查看所有用户信息
+    path('deviceinfosolo/', Ali.device_status_solo),# 用户请求查看所拥有的设备信息
     path('userinfosolo/', Ali.user_info_solo),# 用户请求查看用户信息
 
-    path('index/', views.index),
-    path('page/main/', views.main),
-    path('page/machine/newsAdd/', views.newsAdd),
-    path('page/machine/machineList/', views.machineList),
-    path('page/machine/machineEdit/', views.machineEdit),
-    path('page/user/addUser/', views.addUser),
-    path('page/user/allUsers/', views.allUsers),
-    path('page/user/changePwd/', views.changePwd),
-    path('page/user/editUser/', views.editUser),
+    # path('index/', views.index),
+    # path('page/main/', views.main),
+    # path('page/machine/newsAdd/', views.newsAdd),
+    # path('page/machine/machineList/', views.machineList),
+    # path('page/machine/machineEdit/', views.machineEdit),
+    # path('page/user/addUser/', views.addUser),
+    # path('page/user/allUsers/', views.allUsers),
+    # path('page/user/changePwd/', views.changePwd),
+    # path('page/user/editUser/', views.editUser),
 ]
