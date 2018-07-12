@@ -69,7 +69,7 @@ def LunX():
     p=json.dumps(q)
     print(p)
     d=json.loads(p)
-    print(d+type(d))
+    print(d[0])
     # e=json.loads(str(d))
     # print(e)
 
