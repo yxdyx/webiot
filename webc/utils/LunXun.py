@@ -7,7 +7,8 @@ ext_classpath = '../../JavaJar/text.jar'
 jvmArg = '-Djava.class.path=' + ext_classpath
 
 
-def LunX():
+
+def Lx():
 
     if not jpype.isJVMStarted():
         jpype.startJVM(jvmPath, jvmArg)
@@ -28,9 +29,9 @@ def LunX():
     d=base64.b64decode(c['payload']).decode('utf-8')
     print(d)
     begin=c['topic'].find('/',1,len(c['topic']))
-    print(begin)
+    # print(begin)
     end=c['topic'].rfind('/')
-    print(end)
+    # print(end)
     print(c['topic'][begin+1:end])
     # print(a.decode())
 
@@ -45,6 +46,32 @@ def order():
     s=jd.yuerorder("CSDK","0")
 
 
-if __name__=='__main__':
-    order()
-    LunX()
+# if __name__=='__main__':
+#     order()
+#     LunX()
+
+# 从轮询中取消息
+def LunX():
+
+    # if not jpype.isJVMStarted():
+    #     jpype.startJVM(jvmPath, jvmArg)
+    #
+    # jpype.attachThreadToJVM()
+    # Main = jpype.JClass("yuerr.yuermns")
+    # jd = Main()
+    # s = jd.yuermnscycle()
+    all={"qq":"qq","oo":"oo"}
+    q=[]
+    q.append(all)
+    i={"dd":"dd"}
+    q.append(i)
+    print(q)
+    p=json.dumps(q)
+    print(p)
+    d=json.loads(p)
+    print(d+type(d))
+    # e=json.loads(str(d))
+    # print(e)
+
+LunX()
+
