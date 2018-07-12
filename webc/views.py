@@ -1,6 +1,6 @@
 import json
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import auth
 from django.contrib.auth.models import User
@@ -50,10 +50,11 @@ def login(request):
                 reason = "该用户无效"
         else:
             reason = "无此用户或密码错误"
+        user_info_all()
+        device_status_all()
         j = jsonedit(reason)
         return HttpResponse(j)
-    else:
-        return render(request, 'login.html')
+
 
 
 # 已登录
@@ -200,15 +201,18 @@ def change_user_pwd(request):
             try:
                 req = json.loads(request.body)
                 username = req['username']
-                password = req['password']
+                # password = req['password']
                 n_pwd = req['n_password']
             except:
                 reason = "没有数据耶"
                 j = jsonedit(reason)
                 return HttpResponse(j)
 
-            user = auth.authenticate(username=username, password=password)
+
+
+
             try:
+                user=User.objects.filter(username=username).first()
                 if user is not None:
                     user.set_password(n_pwd)
                     user.save()

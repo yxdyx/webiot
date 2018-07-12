@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, re_path
 from webc import views
-from webc.utils import Ali
+from webc.utils import Ali,LunXun
 
 urlpatterns = [
     # path('admin/', admin.site.urls),
@@ -29,6 +29,7 @@ urlpatterns = [
     path('logout/', views.logout),# 登出
     path('deviceinfosolo/', Ali.device_status_solo),# 用户请求查看所拥有的设备信息
     path('userinfosolo/', Ali.user_info_solo),# 用户请求查看用户信息
+    path('cycle/',LunXun.cycle),
 
     # path('index/', views.index),
     # path('page/main/', views.main),
