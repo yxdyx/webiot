@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import auth
 from django.contrib.auth.models import User
 from .models import DeviceInfo
+from .utils.Ali import user_info_all,device_status_all
 
 # Create your views here.
 
@@ -72,6 +73,7 @@ def add_user(request):
             return HttpResponse(j)
 
         user.save()
+        user_info_all()
         reason = None
         j = jsonedit(reason)
         return HttpResponse(j)
@@ -106,6 +108,9 @@ def delete_user(request):
             j = jsonedit(reason)
             return HttpResponse(j)
 
+        user_info_all()
+        device_status_all()
+
         reason = None
         j = jsonedit(reason)
         return HttpResponse(j)
@@ -139,6 +144,9 @@ def delete_device(request):
             reason = "delete_device出错啦"
             j = jsonedit(reason)
             return HttpResponse(j)
+
+        user_info_all()
+        device_status_all()
 
         reason = None
         j = jsonedit(reason)

@@ -10,15 +10,15 @@
     <title>后台登录</title>
 
 
-    <link href="/static/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
-    <link href="/static/css/font-awesome.css?v=4.4.0" rel="stylesheet">
-    <link href="/static/css/animate.css" rel="stylesheet">
-    <link href="/static/css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
 
-    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all" />
-    <link rel="stylesheet" href="/static/css/user.css" media="all" />
+    <link rel="stylesheet" href="../../layui/css/layui.css" media="all" />
+    <link rel="stylesheet" href="../../css/user.css" media="all" />
     <script>if(window.top !== window.self){ window.top.location = window.location;}</script>
-    <script type="text/javascript" src="/static/layui/layui.js"></script>
+    <script type="text/javascript" src="../../layui/layui.js"></script>
 </head>
 
 <body class="gray-bg">
@@ -27,24 +27,24 @@
         <div>
             <div>
 
-                <h1 class="logo-name" style="font-size: 100px">CMS</h1>
+                <h1 class="logo-name" style="font-size: 100px">Admin</h1>
 
             </div>
             <h3>智能锁后台管理系统</h3>
             <div class="alert-danger" style="font-size: 1.2em">
                 默认密码：123456
             </div>
-            <form class="m-t" role="form">
+            <form class="m-t" role="form" action="" onsubmit="checkpwd()">
                 <div class="form-group">
-                    <input name="uname" id="uname" class="form-control" value="admin"/>
+                    <input name="name" id="name" class="form-control" value="admin"/>
                 </div>
                 <div class="form-group">
                     <input name="pwd" id="pwd" class="form-control" placeholder='密码' type='password' autocomplete="off">
                 </div>
-                <input class="btn btn-primary block full-width m-b" value="登 录" onclick="denglu()"></input>
+                <input type="submit" class="btn btn-primary block full-width m-b" value="登 录"></input>
 
 
-                <p class="text-muted text-center"> <a href="login"><small>忘记密码了？</small></a>
+                <p class="text-muted text-center"> <a href="login.html#"><small>忘记密码了？</small></a>
                 </p>
 
             </form>
@@ -52,42 +52,46 @@
     </div>
 
     <!-- 全局js -->
-    <script src="/static/js/jquery.min.js?v=2.1.4"></script>
-    <script src="/static/js/bootstrap.min.js?v=3.3.6"></script>
-{#    <script>#}
-{#        function checkpwd(){#}
-{#            if(document.forms[0].name.value=="admin"&&document.forms[0].pwd.value=="123456"){#}
-{#                document.forms[0].action="index.html";#}
-{#            }else{#}
-{#                alert("请输入正确的用户名或密码！");#}
-{#                return false;#}
-{#            }#}
-{#        }#}
-{#    </script>#}
+    <script src="js/jquery.min.js?v=2.1.4"></script>
+    <script src="js/bootstrap.min.js?v=3.3.6"></script>
     <script type="text/javascript">
-        function denglu() {
-            var uname=$('#uname').val();
-            var pwd=$('#pwd').val();
-            $.ajax({
-                type: 'POST',
-                dataType:"json",
-                contentType: 'application/json;charset=utf-8',
-                url: 'http://127.0.0.1:8000/',
-                data: JSON.stringify({
-                    "username":uname ,
-                    "password":pwd
-                }),
-                success: function (data) {
-                    q=data.reason;
-                    if (!q) {
-                        alert("登录成功");
-                        window.location.href = '/index';
-                    } else {
-                        alert(q);
-                    }
-                }
-            })
+        function checkpwd(){
+            if(document.forms[0].name.value=="admin"&&document.forms[0].pwd.value=="123456"){
+                document.forms[0].action="index.html";
+            }else{
+                alert("请输入正确的用户名或密码！");
+                return false;
+            }
         }
+        // $("#login_btn").click(function(){
+        //     var uname = $.trim($("#uname").val());
+        //     var pwd = $.trim($("#pwd").val());
+        //     if(uname == ""){
+        //         alert("请输入用户名");
+        //         return false;
+        //     }else if(pwd == ""){
+        //         alert("请输入密码");
+        //         return false;
+        //     }
+        //     //ajax去服务器端校验
+        //     var data= {uname:uname,pwd:pwd};
+        //
+        //     $.ajax({
+        //         type:"POST",
+        //         url:"http://172.20.10.6:8000/1",
+        //         contentType : "application/json;charset=utf-8",
+        //         data: $('#form1').serialize(),
+        //         dataType:'JSON',
+        //         success:function(msg){
+        //             //alert(msg);
+        //             if(msg==1){
+        //                 window.location.href = "{:U('Index/personal')}";
+        //             }else{
+        //                 alert("登录失败，请重试!");
+        //             }
+        //         }
+        //     });
+        // });
     </script>
 
 </body>

@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from webc.models import UandD, DeviceInfo
-
+from  .SaveJson import newssave,userssave
 jvmPath = jpype.getDefaultJVMPath()
 ext_classpath = './JavaJar/text.jar'
 jvmArg = '-Djava.class.path=' + ext_classpath
@@ -18,17 +18,16 @@ def jsonedit(reason=None, info="success"):
     return j
 
 
-# 已登录
-# 管理员请求查看所有设备信息
-@login_required(login_url='/')
-def device_status_all(request):
-    adder = request.user.username
-    if User.objects.get(username=adder).is_staff != 1:
-        reason = "普通用户无此权限"
-        j = jsonedit(reason)
-        return HttpResponse(j)
-    se = search_device_all()
-    return HttpResponse(se)
+# 保存所获取的所有设备信息
+def device_status_all():
+    search_device_all()
+    # with open("../..//json/usersList.json", 'r') as load_f:
+    #
+    #     load_dict = json.load(load_f)
+
+    # print(load_dict)
+
+
 
 
 # 已登录
@@ -40,17 +39,10 @@ def device_status_solo(request):
     return HttpResponse(s)
 
 
-# 已登录
-# 管理员请求查看所有用户信息
-@login_required(login_url='/')
-def user_info_all(request):
-    adder = request.user.username
-    if User.objects.get(username=adder).is_staff != 1:
-        reason = "普通用户无此权限"
-        j = jsonedit(reason)
-        return HttpResponse(j)
-    se = search_user_all()
-    return HttpResponse(se)
+# 保存所有用户信息
+def user_info_all():
+    search_user_all()
+
 
 
 # 已登录
@@ -103,6 +95,9 @@ def add_device(request):
             j = jsonedit(reason)
             return HttpResponse(j)
 
+        user_info_all()
+        device_status_all()
+
         reason = None
         j = jsonedit(reason)
         return HttpResponse(j)
@@ -133,8 +128,10 @@ def search_device_all():
                 # print(q)
                 re = deviceInfoJson(device.deviceid_id, device.devicename, q, device.username, s)
                 dd.append(re)
-    s = json.dumps(dd, indent=4)
-    return s
+    # s = json.dumps(dd, indent=4)
+    # print(s)
+    newssave(dd)
+
 
 
 def deviceInfoJson(did, dname, dsect, user, status):
@@ -189,8 +186,9 @@ def search_user_all():
         print(deviceinfo)
         re = userInfoJson(user.id, user.username, user.is_staff, deviceinfo, str(user.last_login))
         dd.append(re)
-    s = json.dumps(dd, indent=4)
-    return s
+    # s = json.dumps(dd, indent=4)
+    # return s
+    userssave(dd)
 
 
 def search_user_solo(username):
