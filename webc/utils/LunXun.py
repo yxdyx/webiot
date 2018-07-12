@@ -67,7 +67,7 @@ def airtemp(data, devicename):
     print(pr)
     with open(dir, 'w', encoding='utf-8') as json_file:
         # json.dump(pr, json_file, ensure_ascii=False, indent=4)
-        json_file.write(json.dumps(pr,ensure_ascii=False,indent=4))
+        json_file.write(json.dumps(pr, ensure_ascii=False, indent=4))
 
 
 def feedtemp(data, devicename):
@@ -77,7 +77,7 @@ def feedtemp(data, devicename):
 
 
 # 从轮询中取消息
-def LunX():
+def LunX(value):
     if not jpype.isJVMStarted():
         jpype.startJVM(jvmPath, jvmArg)
     jpype.attachThreadToJVM()
@@ -102,14 +102,18 @@ def LunX():
 
     compmes = json.dumps(eval(payload), separators=(',', ':'), ensure_ascii=False)
     print("compmes")
-    compmes=eval(compmes)
+    compmes = eval(compmes)
     print(compmes)
     # print(isinstance(compmes,))
     try:
         opt = compmes['opt']
         print(opt)
         if opt == "temperature":
-            airtemp(compmes, devicename)
+            temp = compmes['mes']
+            if value!="-1":# 阈值为-1代表自动开机禁止
+                if value > temp:  # 空调超过阈值开机
+                    order(devicename, "1")
+                airtemp(compmes, devicename)
         else:
             feedtemp(compmes, devicename)
     except:
@@ -132,18 +136,21 @@ def cycle(request):
             type = req['type']
             devicename = req['devicename']
             ns = req['ns']
+            value = req['value']
 
-            # if type != "leave":
-            #     order(devicename, ns)
-            # else:
-            #     uads=UandD.objects.filter(username=keyuser)
-            #     if uads.exists():
-            #         for uad in uads:
-            #             order(uad.devicename,"0")
+            if type != "leave":
+                if not order(devicename, ns):
+                    reason = "设备故障"
+            else:
+                uads = UandD.objects.filter(username=keyuser)
+                if uads.exists():
+                    for uad in uads:
+                        if not order(uad.devicename, "0"):
+                            reason = "设备故障"
 
             a = 2
             while a != 1:
-                a = LunX()
+                a = LunX(value)
                 if a == 0:
                     reason = "出错"
                     j = jsonedit(reason)
