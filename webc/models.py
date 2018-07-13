@@ -16,6 +16,7 @@ class DeviceInfo(models.Model):
     devicename = models.CharField(max_length=32)
     devicesecret = models.CharField(max_length=32)
     type = models.CharField(max_length=32)
+    value = models.CharField(max_length=32,null=True,blank=True)
 
     class Meta:
         db_table = 'Device'
@@ -28,7 +29,7 @@ class UandD(models.Model):
     name = models.CharField(max_length=32)
     deviceid = models.ForeignKey(DeviceInfo, on_delete=models.CASCADE)
     devicename = models.CharField(max_length=32)
-    device_type=models.CharField(max_length=32)
+    device_type = models.CharField(max_length=32)
 
     class Meta:
         db_table = 'UandD'

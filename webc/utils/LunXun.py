@@ -2,7 +2,7 @@ import jpype
 import base64
 import json
 import os
-from webc.models import UandD
+from webc.models import UandD, DeviceInfo
 from django.http import HttpResponse
 from django.contrib import auth
 
@@ -77,7 +77,7 @@ def feedtemp(data, devicename):
 
 
 # 从轮询中取消息
-def LunX(value):
+def LunX():
     if not jpype.isJVMStarted():
         jpype.startJVM(jvmPath, jvmArg)
     jpype.attachThreadToJVM()
@@ -109,8 +109,8 @@ def LunX(value):
         opt = compmes['opt']
         print(opt)
         if opt == "temperature":
-            temp = compmes['mes']
-            if value!="-1":# 阈值为-1代表自动开机禁止
+            value = DeviceInfo.objects.filter(devicename=devicename).first().value
+            if value != "-1":  # 阈值为-1代表自动开机禁止
                 if value > temp:  # 空调超过阈值开机
                     order(devicename, "1")
                 airtemp(compmes, devicename)
@@ -138,6 +138,10 @@ def cycle(request):
             ns = req['ns']
             value = req['value']
 
+            if type == "1":
+                device = DeviceInfo.objects.filter(devicename=devicename).first()
+                device.update()
+
             if type != "leave":
                 if not order(devicename, ns):
                     reason = "设备故障"
@@ -150,7 +154,7 @@ def cycle(request):
 
             a = 2
             while a != 1:
-                a = LunX(value)
+                a = LunX()
                 if a == 0:
                     reason = "出错"
                     j = jsonedit(reason)
