@@ -140,7 +140,8 @@ def cycle(request):
 
             if type == "1":
                 device = DeviceInfo.objects.filter(devicename=devicename)
-                device.update()
+                device.update(value=value)
+                print("2")
 
             if type != "leave":
                 if not order(devicename, ns):
