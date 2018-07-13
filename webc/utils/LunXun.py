@@ -139,7 +139,7 @@ def cycle(request):
             value = req['value']
 
             if type == "1":
-                device = DeviceInfo.objects.filter(devicename=devicename).first()
+                device = DeviceInfo.objects.filter(devicename=devicename)
                 device.update()
 
             if type != "leave":

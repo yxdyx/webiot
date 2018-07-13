@@ -50,6 +50,7 @@ def device_status_solo(request):
         s = jsonedit(reason)
     else:
         s = search_device_solo(keyuser)
+        device_status_all()
     return HttpResponse(s)
 
 
